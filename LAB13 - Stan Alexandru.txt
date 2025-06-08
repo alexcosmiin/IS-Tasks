@@ -1,0 +1,81 @@
+// Cerinta 1b (functia Max este necesara pentru MaxSum)
+function Max(a: int, b: int): int
+{
+  if a > b then a else b
+}
+
+// Metoda pentru Cerintele 1a si 1b
+method MaxSum(x: int, y: int) returns (s: int, m: int)
+  // Cerinta 1a: Specificarea postconditiei
+  ensures s == x + y && m == Max(x, y)
+{
+  // Cerinta 1b: Implementarea MaxSum
+  s := x + y;
+  m := Max(x, y);
+}
+
+// Metoda pentru Cerinta 1c: Apelarea MaxSum cu argumentele 1928 si 1
+// Aceasta va fi apelata din Main
+method CallerMethodFor1c()
+{
+  var x_val_1c := 1928;
+  var y_val_1c := 1;
+  var sum_result_1c, max_result_1c := MaxSum(x_val_1c, y_val_1c);
+  
+  // Asertiuni pentru a verifica corectitudinea apelului din 1c
+  assert sum_result_1c == x_val_1c + y_val_1c;
+  assert max_result_1c == Max(x_val_1c, y_val_1c);
+
+  print "--- Rezultate Cerinta 1c ---\n";
+  print "Pentru x = ", x_val_1c, " si y = ", y_val_1c, "\n";
+  print "Suma calculata: ", sum_result_1c, "\n";   
+  print "Maximul calculat: ", max_result_1c, "\n";
+}
+
+// Lemma ajutatoare pentru Problema 2 (demonstreaza o proprietate necesara)
+lemma SumIsLessThanOrEqualToTwiceMax(val1: int, val2: int)
+  ensures (val1 + val2) <= 2 * Max(val1, val2)
+{
+  if val1 >= val2 {
+    assert val1 + val2 <= 2 * val1;
+  } else {
+    assert val1 + val2 <= 2 * val2;
+  }
+}
+
+// Metoda pentru Cerinta 2a (implementare si preconditie)
+method ReconstructFromMaxSum(s: int, m: int) returns (x_new: int, y_new: int)
+  requires s <= 2*m 
+  ensures s == x_new + y_new
+  ensures (m == x_new || m == y_new) && x_new <= m && y_new <= m
+{
+  x_new := m;
+  y_new := s - m;
+}
+
+// Metoda pentru Cerinta 2b: Hamul de testare
+method TestMaxSum(x_orig: int, y_orig: int)
+{
+  var s_calc, m_calc := MaxSum(x_orig, y_orig);
+  assert s_calc <= 2 * m_calc; 
+
+  var xx, yy := ReconstructFromMaxSum(s_calc, m_calc);
+  assert (xx == x_orig && yy == y_orig) || (xx == y_orig && yy == x_orig);
+  
+  print "TestMaxSum rulat pentru: x_orig=", x_orig, ", y_orig=", y_orig, " -> xx=", xx, ", yy=", yy, ". Specificatiile sunt corecte.\n";
+}
+
+// Metoda Main pentru a demonstra functionalitatea si a rula testele
+method Main()
+{
+  // Demonstrarea Cerintei 1c
+  CallerMethodFor1c();
+  
+  // Apelarea TestMaxSum (Cerinta 2b) cu diverse valori
+  print "\n--- Verificare si Rulare TestMaxSum (Cerinta 2b) ---\n";
+  TestMaxSum(5, 3);
+  TestMaxSum(2, 7);
+  TestMaxSum(-5, -2);
+  TestMaxSum(10, 10);
+  TestMaxSum(0, 0);
+}
